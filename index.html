@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edusolve | AI Doubt Solver</title>
+    <!-- Google Fonts for Futuristic Look -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Auth Logic -->
+    <script src="auth.js"></script>
+    <script>
+        // Protect Route
+        AuthService.requireAuth();
+    </script>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="glass">
+        <div class="container">
+            <nav>
+                <div class="logo">EDUSOLVE</div>
+                <div id="user-nav">
+                    <!-- Dynamic Content or Fallback -->
+                    <a href="login.html" class="btn-glow"
+                        style="padding: 8px 20px; font-size: 0.9rem; text-decoration: none;">Login</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Landing Section -->
+    <section class="hero">
+        <!-- Floating Particles -->
+        <div class="particles">
+            <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+            <div class="particle" style="top: 60%; left: 80%; animation-delay: 2s;"></div>
+            <div class="particle" style="top: 80%; left: 30%; animation-delay: 4s;"></div>
+            <div class="particle" style="top: 10%; left: 90%; animation-delay: 1s;"></div>
+            <div class="particle" style="top: 40%; left: 50%; animation-delay: 3s;"></div>
+        </div>
+
+        <h1>Welcome to <span>Edusolve</span></h1>
+        <p>AI-Powered Doubt Solving for Class 9 & 10 Science & Math</p>
+        <button class="btn-glow" id="start-btn">Ask Your Doubt</button>
+    </section>
+
+    <!-- Chat Interface -->
+    <section id="chat-section">
+        <div class="container table-center">
+            <div class="section-title">AI Doubt Solver</div>
+            <div class="glass chat-container">
+                <div class="chat-header">
+                    <div class="ai-avatar"></div>
+                    <div>
+                        <h3>Edusolve AI</h3>
+                        <span style="color: var(--accent-cyan); font-size: 0.8rem;">● Online</span>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chat-box">
+                    <div class="message msg-ai">Hello! I am Edusolve AI. Ask me any validation-checked question from
+                        Science or Math (Class 9-10).</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="user-input" class="chat-input" placeholder="Type your doubt here...">
+                    <button class="send-btn" id="send-btn">➤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Practice Questions -->
+    <section id="practice-section">
+        <div class="container">
+            <div class="section-title">Practice Now</div>
+            <div class="cards-grid">
+                <div class="glass practice-card">
+                    <h3>Physics</h3>
+                    <p>Motion & Laws of Motion. Master the concepts with AI.</p>
+                    <button class="btn-glow" style="padding: 10px 25px; font-size: 0.9rem;">Start Quiz</button>
+                </div>
+                <div class="glass practice-card">
+                    <h3>Chemistry</h3>
+                    <p>Atoms & Molecules. Interactive periodic table questions.</p>
+                    <button class="btn-glow" style="padding: 10px 25px; font-size: 0.9rem;">Start Quiz</button>
+                </div>
+                <div class="glass practice-card">
+                    <h3>Math</h3>
+                    <p>Polynomials & Geometry. Solve complex problems easily.</p>
+                    <button class="btn-glow" style="padding: 10px 25px; font-size: 0.9rem;">Start Quiz</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Chat Section -->
+    <section id="community-section">
+        <div class="container table-center">
+            <div class="section-title">Community Help</div>
+            <div class="glass chat-container community-chat-container">
+                <div class="chat-header community-chat-header">
+                    <div class="community-icon">C</div>
+                    <div>
+                        <h3>Class 10 Study Group</h3>
+                        <span style="color: var(--accent-orange); font-size: 0.8rem;">● 24 Students Online</span>
+                    </div>
+                </div>
+                <div class="chat-messages" id="community-chat-box">
+                    <div class="message msg-peer">
+                        <span class="sender-name">Aryan</span>
+                        What is the formula for kinetic energy?
+                    </div>
+                    <div class="message msg-peer">
+                        <span class="sender-name">Sarah</span>
+                        It's 1/2 * mass * velocity squared!
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="community-input" class="chat-input" placeholder="Ask the community...">
+                    <button class="send-btn" id="community-send-btn">➤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Edusolve. The Future of Learning.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('start-btn');
+
+            // AI Chat Elements
+            const chatSection = document.getElementById('chat-section');
+            const chatBox = document.getElementById('chat-box');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+
+            // Community Chat Elements
+            const communityChatBox = document.getElementById('community-chat-box');
+            const communityInput = document.getElementById('community-input');
+            const communitySendBtn = document.getElementById('community-send-btn');
+
+            // Scroll to Chat
+            startBtn.addEventListener('click', () => {
+                chatSection.scrollIntoView({ behavior: 'smooth' });
+            });
+
+
+            // --- AUTH UI LOGIC ---
+            const user = AuthService.getUser();
+            const userNav = document.getElementById('user-nav');
+            if (user) {
+                userNav.innerHTML = `
+                    <span style="color: var(--accent-cyan); margin-right: 15px; font-family: var(--font-display);">Hello, ${user.username}</span>
+                    <button id="logout-btn" class="btn-glow" style="padding: 8px 20px; font-size: 0.9rem;">Logout</button>
+                `;
+                document.getElementById('logout-btn').addEventListener('click', () => AuthService.logout());
+            }
+
+            // --- AI CHAT LOGIC ---
+            function addAiChatMessage(text, sender) {
+                const msgDiv = document.createElement('div');
+                msgDiv.classList.add('message');
+                msgDiv.classList.add(sender === 'user' ? 'msg-user' : 'msg-ai');
+                msgDiv.innerText = text;
+                chatBox.appendChild(msgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+
+            function handleAiSend() {
+                const text = userInput.value.trim();
+                if (!text) return;
+
+                addAiChatMessage(text, 'user');
+                userInput.value = '';
+
+                setTimeout(() => {
+                    const responses = [
+                        "That's an interesting question! Let me explain...",
+                        "According to Newton's laws...",
+                        "Here is the step-by-step solution...",
+                        "Let's break this down into simpler concepts."
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    addAiChatMessage(randomResponse, 'ai');
+                }, 1000);
+            }
+
+            sendBtn.addEventListener('click', handleAiSend);
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleAiSend();
+            });
+
+            // --- COMMUNITY CHAT LOGIC ---
+            function addCommunityMessage(text, sender, name = "You") {
+                const msgDiv = document.createElement('div');
+                msgDiv.classList.add('message');
+                msgDiv.classList.add(sender === 'self' ? 'msg-self-community' : 'msg-peer');
+
+                if (sender !== 'self') {
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'sender-name';
+                    nameSpan.innerText = name;
+                    msgDiv.appendChild(nameSpan);
+                }
+
+                // Append text content
+                msgDiv.appendChild(document.createTextNode(text));
+
+                communityChatBox.appendChild(msgDiv);
+                communityChatBox.scrollTop = communityChatBox.scrollHeight;
+            }
+
+            function handleCommunitySend() {
+                const text = communityInput.value.trim();
+                if (!text) return;
+
+                addCommunityMessage(text, 'self');
+                communityInput.value = '';
+
+                // Simulate Peer Response
+                setTimeout(() => {
+                    const peerNames = ["Rohan", "Priya", "Alex", "Tanmay"];
+                    const peerResponses = [
+                        "I think the answer is in Chapter 4.",
+                        "Yeah, that's correct!",
+                        "Can someone explain the derivation?",
+                        "Check the NCERT example 5.2"
+                    ];
+                    const randomName = peerNames[Math.floor(Math.random() * peerNames.length)];
+                    const randomResponse = peerResponses[Math.floor(Math.random() * peerResponses.length)];
+                    addCommunityMessage(randomResponse, 'peer', randomName);
+                }, 2000 + Math.random() * 2000); // Random delay 2-4s
+            }
+
+            communitySendBtn.addEventListener('click', handleCommunitySend);
+            communityInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleCommunitySend();
+            });
+
+            // Hover Ripple Effect for Buttons
+            const buttons = document.querySelectorAll('.btn-glow');
+            buttons.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

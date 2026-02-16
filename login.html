@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Edusolve</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Auth Logic -->
+    <script src="auth.js"></script>
+</head>
+
+<body>
+
+    <!-- Particles Background (Shared) -->
+    <div class="particles">
+        <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="top: 60%; left: 80%; animation-delay: 2s;"></div>
+        <div class="particle" style="top: 80%; left: 30%; animation-delay: 4s;"></div>
+        <div class="particle" style="top: 10%; left: 90%; animation-delay: 1s;"></div>
+        <div class="particle" style="top: 40%; left: 50%; animation-delay: 3s;"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-wrapper">
+        <div class="glass login-card">
+            <div class="login-header">
+                <h2 class="logo-text">EDUSOLVE</h2>
+                <p>Welcome Back, Future Scientist</p>
+            </div>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Username / Email</label>
+                    <input type="text" id="username" placeholder="Enter your ID" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn-glow login-btn">
+                    <span>Login</span>
+                    <div class="btn-loader"></div>
+                </button>
+
+                <div class="login-footer">
+                    <p>Don't have an account? <a href="#" class="accent-link">Sign Up</a></p>
+                    <a href="index.html" class="back-link">← Back to Dashboard</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Redirect if already logged in
+            AuthService.redirectIfAuthenticated();
+
+            const loginForm = document.getElementById('login-form');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.querySelector('.login-btn');
+            const btnText = loginBtn.querySelector('span');
+            const loader = loginBtn.querySelector('.btn-loader');
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!username || !password) {
+                    alert("Please enter both username and password.");
+                    return;
+                }
+
+                // Simulate Login Loading
+                loginBtn.classList.add('loading');
+                btnText.style.display = 'none';
+                loader.style.display = 'block';
+
+                setTimeout(() => {
+                    // Use AuthService
+                    const result = AuthService.login(username, password);
+
+                    if (result.success) {
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(result.message);
+                        // Reset button state
+                        loginBtn.classList.remove('loading');
+                        btnText.style.display = 'block';
+                        loader.style.display = 'none';
+                    }
+                }, 1000);
+            });
+
+            // Input Focus Effects
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.parentElement.classList.add('focused');
+                });
+                input.addEventListener('blur', () => {
+                    if (!input.value) input.parentElement.classList.remove('focused');
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
