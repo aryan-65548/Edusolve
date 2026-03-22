@@ -9,7 +9,8 @@ urlpatterns = [
     
     # API endpoints
     path('api/auth/', include('accounts.urls')),
-    path('api/doubts/', include('doubts.urls')),  # ← ADD THIS LINE
+    path('api/doubts/', include('doubts.urls')),
+    path('api/practice/', include('practice.urls')),
 ]
 
 # Serve media files in development

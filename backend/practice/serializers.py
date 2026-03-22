@@ -4,9 +4,7 @@ from doubts.serializers import DoubtSessionSerializer
 
 
 class PracticeQuestionSerializer(serializers.ModelSerializer):
-    """
-    Serializer for PracticeQuestion model
-    """
+    """Serializer for PracticeQuestion model"""
     related_session_detail = DoubtSessionSerializer(
         source='related_session',
         read_only=True
@@ -43,9 +41,7 @@ class PracticeQuestionSerializer(serializers.ModelSerializer):
 
 
 class PracticeQuestionListSerializer(serializers.ModelSerializer):
-    """
-    Lighter serializer for list view (no correct answer!)
-    """
+    """Lighter serializer for list view (no correct answer!)"""
     accuracy_rate = serializers.ReadOnlyField()
     
     class Meta:
@@ -66,9 +62,7 @@ class PracticeQuestionListSerializer(serializers.ModelSerializer):
 
 
 class SubmitAnswerSerializer(serializers.ModelSerializer):
-    """
-    Serializer for submitting an answer
-    """
+    """Serializer for submitting an answer"""
     
     class Meta:
         model = StudentAnswer
@@ -77,30 +71,10 @@ class SubmitAnswerSerializer(serializers.ModelSerializer):
             'selected_answer',
             'time_taken_seconds',
         ]
-    
-    def create(self, validated_data):
-        """
-        Override create to check if answer is correct
-        """
-        question = validated_data['question']
-        selected_answer = validated_data['selected_answer']
-        
-        # Check if correct
-        is_correct = (selected_answer == question.correct_answer)
-        
-        # Add is_correct to validated data
-        validated_data['is_correct'] = is_correct
-        
-        # Create the answer
-        answer = StudentAnswer.objects.create(**validated_data)
-        
-        return answer
 
 
 class StudentAnswerSerializer(serializers.ModelSerializer):
-    """
-    Serializer for viewing student answers
-    """
+    """Serializer for viewing student answers"""
     question_detail = PracticeQuestionSerializer(
         source='question',
         read_only=True
