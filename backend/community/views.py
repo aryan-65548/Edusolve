@@ -1,3 +1,4 @@
+from accounts.permissions import IsThreadAuthorOrReadOnly, CanModerateContent
 from rest_framework import viewsets, status, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -29,7 +30,7 @@ class DiscussionThreadViewSet(viewsets.ModelViewSet):
     - POST   /api/community/threads/{id}/increment-views/ - Track views
     """
     
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsThreadAuthorOrReadOnly]
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'content', 'author__username']
     ordering_fields = ['created_at', 'views_count', 'updated_at']

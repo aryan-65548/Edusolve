@@ -201,55 +201,144 @@ class StudentAnswerViewSet(viewsets.ModelViewSet):
             'answer_id': answer.id
         }, status=status.HTTP_201_CREATED)
     
-    @action(detail=False, methods=['get'])
-    def my_answers(self, request):
-        """Get all answers by current student"""
-        answers = self.get_queryset().order_by('-attempted_at')
-        serializer = StudentAnswerSerializer(answers, many=True)
+@action(detail=False, methods=['get'], url_path='my-answers')
+def my_answers(self, request):
+    """
+    Get all answers by current student
+    
+    GET /api/practice/answers/my-answers/
+    """
+    answers = self.get_queryset().order_by('-attempted_at')
+    serializer = StudentAnswerSerializer(answers, many=True)
+    
+    return Response({
+        'count': answers.count(),
+        'answers': serializer.data
+    })
+
+@action(detail=False, methods=['get'], url_path='stats')
+def stats(self, request):
+    """
+    Get statistics for current student
+    
+    GET /api/practice/answers/stats/
+    """
+    student = request.user
+    answers = self.get_queryset()
+    
+    total_attempts = answers.count()
+    correct_answers = answers.filter(is_correct=True).count()
+    
+    # Calculate accuracy
+    accuracy = (correct_answers / total_attempts * 100) if total_attempts > 0 else 0
+    
+    # By difficulty
+    easy_correct = answers.filter(
+        is_correct=True,
+        question__difficulty='easy'
+    ).count()
+    medium_correct = answers.filter(
+        is_correct=True,
+        question__difficulty='medium'
+    ).count()
+    hard_correct = answers.filter(
+        is_correct=True,
+        question__difficulty='hard'
+    ).count()
+    
+    stats = {
+        'total_attempts': total_attempts,
+        'correct_answers': correct_answers,
+        'wrong_answers': total_attempts - correct_answers,
+        'accuracy_percentage': round(accuracy, 2),
+        'total_points': student.points,
+        'by_difficulty': {
+            'easy': easy_correct,
+            'medium': medium_correct,
+            'hard': hard_correct,
+        },
+    }
+    
+    return Response(stats)
+
+@action(detail=False, methods=['get'], url_path='leaderboard')
+def leaderboard(self, request):
+    """
+    Get leaderboard (top students by points)
+    
+    GET /api/practice/answers/leaderboard/
+    """
+    from accounts.models import Student
+    
+    # Get top 10 students
+    top_students = Student.objects.all().order_by('-points')[:10]
+    
+    leaderboard = []
+    for rank, student in enumerate(top_students, start=1):
+        student_answers = StudentAnswer.objects.filter(student=student)
         
-        return Response({
-            'count': answers.count(),
-            'answers': serializer.data
+        leaderboard.append({
+            'rank': rank,
+            'username': student.username,
+            'grade': student.grade,
+            'points': student.points,
+            'total_questions_answered': student_answers.count(),
+            'correct_answers': student_answers.filter(is_correct=True).count(),
         })
     
-    @action(detail=False, methods=['get'])
-    def stats(self, request):
-        """Get statistics for current student"""
-        student = request.user
-        answers = self.get_queryset()
-        
-        total_attempts = answers.count()
-        correct_answers = answers.filter(is_correct=True).count()
-        
-        # Calculate accuracy
-        accuracy = (correct_answers / total_attempts * 100) if total_attempts > 0 else 0
-        
-        stats = {
-            'total_attempts': total_attempts,
-            'correct_answers': correct_answers,
-            'wrong_answers': total_attempts - correct_answers,
-            'accuracy_percentage': round(accuracy, 2),
-            'total_points': student.points,
-        }
-        
-        return Response(stats)
+    return Response({
+        'leaderboard': leaderboard
+    })
 
+import csv
+from django.http import HttpResponse
+
+@action(detail=False, methods=['get'], url_path='export-csv')
+def export_csv(self, request):
+    """
+    Export student's answer history as CSV
+    
+    GET /api/practice/answers/export-csv/
+    """
+    answers = self.get_queryset()
+    
+    # Create the HttpResponse object with CSV header
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="my_answers_{request.user.username}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Question', 'Your Answer', 'Correct Answer', 'Result', 'Points', 'Date'])
+    
+    for answer in answers:
+        points_map = {'easy': 5, 'medium': 10, 'hard': 15}
+        points = points_map.get(answer.question.difficulty, 0) if answer.is_correct else 0
+        
+        writer.writerow([
+            answer.question.question_text[:50] + '...',
+            answer.selected_answer,
+            answer.question.correct_answer,
+            'Correct' if answer.is_correct else 'Wrong',
+            points,
+            answer.attempted_at.strftime('%Y-%m-%d %H:%M'),
+        ])
+    
+    return response
 
 class QuizViewSet(viewsets.ViewSet):
     """
-    Special ViewSet for quiz functionality
+    ViewSet for quiz functionality
     
     Generates random quizzes based on criteria
     """
     
     permission_classes = [permissions.IsAuthenticated]
     
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], url_path='random')
     def random_quiz(self, request):
         """
         Generate a random quiz
         
-        GET /api/practice/quiz/random-quiz/?count=5&difficulty=medium&subject=mathematics
+        GET /api/practice/quiz/random/?count=5&difficulty=medium
         
         Query Parameters:
         - count: Number of questions (default: 5, max: 20)
@@ -272,6 +361,7 @@ class QuizViewSet(viewsets.ViewSet):
             questions = questions.filter(related_session__subject=subject)
         
         # Get unanswered questions first
+        from .models import StudentAnswer
         answered_question_ids = StudentAnswer.objects.filter(
             student=request.user
         ).values_list('question_id', flat=True)
@@ -286,6 +376,7 @@ class QuizViewSet(viewsets.ViewSet):
         else:
             quiz_questions = list(unanswered.order_by('?')[:count])
         
+        from .serializers import PracticeQuestionListSerializer
         serializer = PracticeQuestionListSerializer(quiz_questions, many=True)
         
         return Response({
