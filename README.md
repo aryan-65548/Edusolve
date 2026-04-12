@@ -63,7 +63,7 @@ Built by a group of four students, edusolve aims to make learning smarter, faste
 - DJANGO framework, fastAPI
 
 **AI Integration:**
-- (Add your AI API here — OpenAI / others)
+- LLM model = llama-3.1-8b-instant
 
 ---
 
