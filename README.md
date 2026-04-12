@@ -67,16 +67,4 @@ Built by a group of four students, edusolve aims to make learning smarter, faste
 
 ---
 
-## Project Structure
-edusolve/
-│
-├── frontend/
-│ ├── components/
-│ ├── pages/
-│ └── assets/
-│
-├── backend/
-│ ├── api/
-│ └── services/
-│
-└── README.md
+
