@@ -48,5 +48,8 @@ venv.bak/
 *~
 .DS_Store
 
-# Logs
+# Logs & Pytest
 *.log
+.pytest_cache/
+.coverage
+htmlcov/

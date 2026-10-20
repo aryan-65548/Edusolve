@@ -159,10 +159,8 @@ python ai_engine.py
 #### Example Session:
 
 ```text
-============================================================
          Welcome to EduSolve AI Tutor 🎓
      For Class 9 & 10 | Science & Maths
-============================================================
 Enter your Class (9 or 10): 9
 
 Choose Subject:
@@ -174,9 +172,7 @@ Type your doubt/question: Why does an object float or sink in water?
 
  Thinking about: Why does an object float or sink in water?
 
-============================================================
 ANSWER:
-============================================================
 EXPLANATION:
 Whether an object floats or sinks depends on its density compared to the density of water.
 If an object is less dense than water, the buoyant force exerted by water pushes it up, causing
@@ -192,9 +188,7 @@ An iron nail sinks in water because iron is much denser than water, but a huge s
 floats because its hollow shape encloses a vast amount of air, making its overall average density
 less than that of water.
 
-============================================================
 PRACTICE QUESTIONS:
-============================================================
 
 Q1 [MCQ]: An iron pin sinks in water whereas a cork floats. This is because:
    Answer: The density of iron is greater than water, while cork is less dense than water.
